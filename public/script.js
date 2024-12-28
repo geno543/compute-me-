@@ -33,7 +33,7 @@ if (particles) {
 // HERO TYPING ANIMATION
 const typingText = document.querySelector('.typing-text');
 if (typingText) {
-  const textToType = "ComputeMe Hackathon";
+  const textToType = "HackaScience";
   typingText.textContent = '';
   let i = 0;
 
@@ -48,20 +48,18 @@ if (typingText) {
 }
 
 // COUNTER ANIMATION FOR STATS
-const stats = [
-  { element: document.querySelector('.stat-number[data-count="12"]'), target: 12 },
-  { element: document.querySelector('.stat-number[data-count="150"]'), target: 150 },
-  { element: document.querySelector('.stat-number[data-count="5"]'), target: 5 }
-];
+const stats = document.querySelectorAll('.stat-number');
 const observerOptions = { threshold: 0.5 };
 const statsObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
+  entries.forEach(async entry => {
     if (entry.isIntersecting) {
-      const target = entry.target;
-      const count = parseInt(target.getAttribute('data-count'));
-      let current = 0;
-      const increment = count / 50; // speed factor
+      console.log(entry);
+      const target = entry.target
+      console.log();
 
+      const count = parseInt(entry.target.getAttribute('data-count') == 150 ? await fetch("/api/hackers").then(res => res.json()).then(data => data.hackers) : entry.target.getAttribute('data-count'));
+      let current = 0;
+      const increment = 0.5;
       function updateCount() {
         if (current < count) {
           current += increment;
@@ -78,11 +76,11 @@ const statsObserver = new IntersectionObserver((entries) => {
 }, observerOptions);
 
 stats.forEach(stat => {
-  if (stat.element) statsObserver.observe(stat.element);
+  statsObserver.observe(stat);
 });
 
 // REGISTRATION FORM LOGIC
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('registration-form');
   if (!form) return;
 
@@ -92,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   updateFormState();
 
-  form.addEventListener('click', function(e) {
+  form.addEventListener('click', function (e) {
     if (e.target.classList.contains('next-button')) {
       if (validateSection(currentStep)) {
         currentStep = Math.min(currentStep + 1, sections.length - 1);
@@ -184,8 +182,9 @@ document.addEventListener('DOMContentLoaded', function() {
       const formData = new FormData(form);
       const data = Object.fromEntries(formData.entries());
 
-      // Example endpoint
-      const response = await fetch('http://localhost:8080/api/registrations', {
+      console.log(JSON.stringify(data));
+
+      const response = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -201,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="success-message">
           <i class="fas fa-check-circle"></i>
           <h3>Registration Successful!</h3>
-          <p>Thank you for registering for the ComputeMe Hackathon.</p>
+          <p>Thank you for registering for the HackaScience.</p>
           <div class="success-details">
             <p><strong>Name:</strong> ${data.fullName}</p>
             <p><strong>Email:</strong> ${data.email}</p>
